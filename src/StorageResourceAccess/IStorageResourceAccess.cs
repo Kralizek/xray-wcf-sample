@@ -1,23 +1,74 @@
-﻿using System.ServiceModel;
+﻿using System;
+using System.Runtime.Serialization;
+using System.ServiceModel;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 
-namespace EMG.StorageResourceAccess
+namespace XRaySample.StorageResourceAccess
 {
-    /* 
-        The contract to expose.
-        Can have both synchronous and asynchronous methods. WCF will create support for both cases.
-        Due to C# compiler limitations, your service will have to perfectly implement the interface.
-        Asynchronous methods in the interface is suggested.
-    */
     [ServiceContract]
     public interface IStorageResourceAccess
     {
 
         [OperationContract]
-        string Echo(string message);
+        Task RegisterAbsenceAsync(string employee, DateTime date, AbsenceReason reason);
 
         [OperationContract]
-        Task<string> UpperCaseAsync(string message);
+        Task<Absence[]> GetUserAbsenceListAsync(string employee);
+    }
 
+    [DataContract]
+    [DynamoDBTable("absences", lowerCamelCaseProperties: true)]
+    public class Absence
+    {
+        [DataMember]
+        [DynamoDBHashKey("employee")]
+        public string Employee { get; set; }
+
+        [DataMember]
+        [DynamoDBRangeKey("date", typeof(DateConverter))]
+        public DateTime Date { get; set; }
+
+        [DataMember]
+        [DynamoDBProperty("inserted-on")]
+        public DateTime InsertedOn { get; set; }
+
+        [DataMember]
+        [DynamoDBProperty("reason")]
+        public AbsenceReason Reason { get; set; }
+    }
+
+
+    [DataContract]
+    public enum AbsenceReason
+    {
+        [EnumMember] Sick = 1,
+        [EnumMember] CareOfChild = 2
+    }
+
+    public class DateConverter : Amazon.DynamoDBv2.DataModel.IPropertyConverter
+    {
+        public DynamoDBEntry ToEntry(object value)
+        {
+            if (value is DateTime dt)
+            {
+                return new Primitive(dt.Date.ToString("yyyy-MM-dd"));
+            }
+
+            return new DynamoDBNull();
+        }
+
+        public object FromEntry(DynamoDBEntry entry)
+        {
+            var value = entry.AsString();
+
+            if (DateTime.TryParse(value, out var date))
+            {
+                return date;
+            }
+
+            return default(DateTime);
+        }
     }
 }

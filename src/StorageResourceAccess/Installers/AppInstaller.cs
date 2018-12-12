@@ -1,10 +1,12 @@
+using Amazon;
+using Amazon.DynamoDBv2;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using EMG.Common;
 using EMG.Wcf.Installers;
 
-namespace EMG.StorageResourceAccess.Installers
+namespace XRaySample.StorageResourceAccess.Installers
 {
     public class AppInstaller : IWindsorInstaller
     {
@@ -12,11 +14,7 @@ namespace EMG.StorageResourceAccess.Installers
         {
             container.RegisterWcfService<StorageResourceAccess, StorageResourceAccessServiceHostConfigurator>();
 
-            /* EQUIVALENT TO
-            container.Register(Component.For<StorageResourceAccess>().LifestyleTransient());
-
-            container.Register(Component.For<IServiceHostConfigurator<StorageResourceAccess>, StorageResourceAccessWithDiscoveryServiceHostConfigurator>());
-            */
+            container.Register(Component.For<IAmazonDynamoDB, AmazonDynamoDBClient>().UsingFactoryMethod(() => new AmazonDynamoDBClient(RegionEndpoint.EUWest1)).LifeStyle.Transient);
 
             container.Register(Component.For<WcfHostingOptions>().FromConfiguration(c => c.GetSection("WCF")));
         }

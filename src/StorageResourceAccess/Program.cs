@@ -1,4 +1,5 @@
 ﻿using System;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Castle.Facilities.WcfIntegration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
@@ -6,25 +7,25 @@ using Castle.Windsor.Installer;
 using EMG.Common;
 using EMG.Wcf;
 using EMG.Wcf.Installers;
-using EMG.StorageResourceAccess.Installers;
 using Loggly.Config;
 using Microsoft.Extensions.Configuration;
 using Nybus.Logging;
 using Topshelf;
 using Topshelf.CastleWindsor;
+using XRaySample.StorageResourceAccess.Installers;
 
-namespace EMG.StorageResourceAccess
+namespace XRaySample.StorageResourceAccess
 {
     class Program
     {
-        public static readonly string ServiceName = "EMG.StorageResourceAccess";
+        public static readonly string ServiceName = "XRaySample.StorageResourceAccess";
 
         static void Main(string[] args)
         {
+            AWSSDKHandler.RegisterXRayForAllServices();
+
             using (var container = CreateContainer())
             {
-                SetUpLoggly(container);
-
                 var loggerFactory = container.Resolve<ILoggerFactory>();
                 var logger = loggerFactory.CreateCurrentClassLogger();
 
@@ -53,11 +54,8 @@ namespace EMG.StorageResourceAccess
                         });
                     });
 
-                    cfg.SetDisplayName("EMG StorageResourceAccess");
+                    cfg.SetDisplayName("XRaySample StorageResourceAccess");
                     cfg.SetServiceName(ServiceName);
-
-                    // Set a more descriptive text about the service
-                    //configuration.SetDescription("A service for EMG");
 
                     cfg.EnableServiceRecovery(rc => rc.RestartService(1).RestartService(5).RestartService(10).SetResetPeriod(1));
 
@@ -88,8 +86,6 @@ namespace EMG.StorageResourceAccess
                 b => b.AddEnvironmentVariables()
             );
 
-            // Check https://app.assembla.com/spaces/studentum/git-8/source/master/Configuration/CastleWindsor/README.md for usages
-
             container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
 
             container.Install(FromAssembly.InThisApplication());
@@ -99,21 +95,6 @@ namespace EMG.StorageResourceAccess
             container.Install(new WcfInstaller<StorageResourceAccess>());
 
             return container;
-        }
-
-        private static void SetUpLoggly(IWindsorContainer container)
-        {
-            var configuration = container.Resolve<IConfigurationRoot>();
-            var options = container.Resolve<LogglyOptions>();
-
-            var instance = LogglyConfig.Instance;
-            instance.ApplicationName = ServiceName;
-
-            instance.Transport.EndpointHostname = options.EndpointHostname;
-            instance.Transport.EndpointPort = options.EndpointPort;
-            instance.Transport.LogTransport = options.LogTransport;
-            instance.CustomerToken = options.CustomerToken;
-            instance.TagConfig.Tags.Add(configuration.GetValue<string>("Environment") ?? "Development");
         }
     }
 }

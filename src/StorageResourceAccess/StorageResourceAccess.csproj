@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net461</TargetFramework>
     <RootNamespace>XRaySample.StorageResourceAccess</RootNamespace>
-	<AssemblyName>XRaySample.Service.StorageResourceAccess</AssemblyName>
+  <AssemblyName>XRaySample.Service.StorageResourceAccess</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +15,6 @@
     <PackageReference Include="Kralizek.AWSXRayRecorder.Handlers.ServiceModel" Version="1.0.0-beta" />
     <PackageReference Include="NLog.Config" Version="[4.4.4,5)" />
     <PackageReference Include="Nybus.NLog" Version="[0.6.0.97,1)" />
-    <PackageReference Include="Studentum.Infrastructure.Logging.NLog.Loggly" Version="1.0.0.28" />
     <PackageReference Include="Topshelf.CastleWindsor" Version="[1.0.0,2)" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />

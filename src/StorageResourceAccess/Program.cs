@@ -7,12 +7,10 @@ using Castle.Windsor.Installer;
 using EMG.Common;
 using EMG.Wcf;
 using EMG.Wcf.Installers;
-using Loggly.Config;
 using Microsoft.Extensions.Configuration;
 using Nybus.Logging;
 using Topshelf;
 using Topshelf.CastleWindsor;
-using XRaySample.StorageResourceAccess.Installers;
 
 namespace XRaySample.StorageResourceAccess
 {

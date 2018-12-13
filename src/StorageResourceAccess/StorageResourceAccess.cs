@@ -35,11 +35,12 @@ namespace XRaySample.StorageResourceAccess
 
             try
             {
+                _logger.LogInformation(newAbsence, o => $"Persisting new absence: {o.Employee} reported {o.Reason:G} on {o.Date:yyyy-MM-dd} at {o.InsertedOn:s}");
                 await _context.SaveAsync(newAbsence);
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(newAbsence, ex, (obj, e) => $"{e.Message} occurred when persisting {obj.Employee}'s absence");
                 throw;
             }
         }

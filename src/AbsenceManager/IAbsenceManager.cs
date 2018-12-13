@@ -1,23 +1,16 @@
-﻿using System.ServiceModel;
+﻿using System;
+using System.ServiceModel;
 using System.Threading.Tasks;
 
 namespace EMG.AbsenceManager
 {
-    /* 
-        The contract to expose.
-        Can have both synchronous and asynchronous methods. WCF will create support for both cases.
-        Due to C# compiler limitations, your service will have to perfectly implement the interface.
-        Asynchronous methods in the interface is suggested.
-    */
     [ServiceContract]
     public interface IAbsenceManager
     {
+        [OperationContract]
+        Task MarkAsSick(string employee, DateTime date);
 
         [OperationContract]
-        string Echo(string message);
-
-        [OperationContract]
-        Task<string> UpperCaseAsync(string message);
-
+        Task MarkAsCareOfChild(string employee, DateTime date);
     }
 }

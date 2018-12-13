@@ -1,8 +1,11 @@
+using System.ServiceModel;
+using Castle.Facilities.WcfIntegration;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using EMG.Common;
 using EMG.Wcf.Installers;
+using XRaySample.StorageResourceAccess;
 
 namespace EMG.AbsenceManager.Installers
 {
@@ -19,6 +22,11 @@ namespace EMG.AbsenceManager.Installers
             */
 
             container.Register(Component.For<WcfHostingOptions>().FromConfiguration(c => c.GetSection("WCF")));
+
+            container.Register(Component.For<IStorageResourceAccess>().ImplementedBy<StorageResourceAccessClient>().AsWcfClient(new DefaultClientModel
+            {
+                Endpoint = WcfEndpoint.BoundTo(new NetTcpBinding(SecurityMode.None)).At("net.tcp://localtest.me:10001/")
+            }));
         }
     }
     

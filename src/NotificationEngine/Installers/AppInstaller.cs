@@ -1,3 +1,5 @@
+using Amazon;
+using Amazon.SimpleNotificationService;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -12,13 +14,9 @@ namespace EMG.NotificationEngine.Installers
         {
             container.RegisterWcfService<NotificationEngine, NotificationEngineServiceHostConfigurator>();
 
-            /* EQUIVALENT TO
-            container.Register(Component.For<NotificationEngine>().LifestyleTransient());
-
-            container.Register(Component.For<IServiceHostConfigurator<NotificationEngine>, NotificationEngineWithDiscoveryServiceHostConfigurator>());
-            */
-
             container.Register(Component.For<WcfHostingOptions>().FromConfiguration(c => c.GetSection("WCF")));
+
+            container.Register(Component.For<IAmazonSimpleNotificationService>().UsingFactoryMethod(() => new AmazonSimpleNotificationServiceClient(RegionEndpoint.EUWest1)));
         }
     }
     

@@ -1,4 +1,5 @@
 ﻿using System;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Castle.Facilities.WcfIntegration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
@@ -7,7 +8,6 @@ using EMG.Common;
 using EMG.Wcf;
 using EMG.Wcf.Installers;
 using EMG.NotificationEngine.Installers;
-using Loggly.Config;
 using Microsoft.Extensions.Configuration;
 using Nybus.Logging;
 using Topshelf;
@@ -17,14 +17,14 @@ namespace EMG.NotificationEngine
 {
     class Program
     {
-        public static readonly string ServiceName = "EMG.NotificationEngine";
+        public static readonly string ServiceName = "XRaySample.NotificationEngine";
 
         static void Main(string[] args)
         {
+            AWSSDKHandler.RegisterXRayForAllServices();
+
             using (var container = CreateContainer())
             {
-                SetUpLoggly(container);
-
                 var loggerFactory = container.Resolve<ILoggerFactory>();
                 var logger = loggerFactory.CreateCurrentClassLogger();
 
@@ -53,11 +53,8 @@ namespace EMG.NotificationEngine
                         });
                     });
 
-                    cfg.SetDisplayName("EMG NotificationEngine");
+                    cfg.SetDisplayName("XRaySample NotificationEngine");
                     cfg.SetServiceName(ServiceName);
-
-                    // Set a more descriptive text about the service
-                    //configuration.SetDescription("A service for EMG");
 
                     cfg.EnableServiceRecovery(rc => rc.RestartService(1).RestartService(5).RestartService(10).SetResetPeriod(1));
 
@@ -99,21 +96,6 @@ namespace EMG.NotificationEngine
             container.Install(new WcfInstaller<NotificationEngine>());
 
             return container;
-        }
-
-        private static void SetUpLoggly(IWindsorContainer container)
-        {
-            var configuration = container.Resolve<IConfigurationRoot>();
-            var options = container.Resolve<LogglyOptions>();
-
-            var instance = LogglyConfig.Instance;
-            instance.ApplicationName = ServiceName;
-
-            instance.Transport.EndpointHostname = options.EndpointHostname;
-            instance.Transport.EndpointPort = options.EndpointPort;
-            instance.Transport.LogTransport = options.LogTransport;
-            instance.CustomerToken = options.CustomerToken;
-            instance.TagConfig.Tags.Add(configuration.GetValue<string>("Environment") ?? "Development");
         }
     }
 }

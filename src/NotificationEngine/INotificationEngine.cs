@@ -1,23 +1,20 @@
-﻿using System.ServiceModel;
+﻿using System.Runtime.Serialization;
+using System.ServiceModel;
 using System.Threading.Tasks;
 
 namespace EMG.NotificationEngine
 {
-    /* 
-        The contract to expose.
-        Can have both synchronous and asynchronous methods. WCF will create support for both cases.
-        Due to C# compiler limitations, your service will have to perfectly implement the interface.
-        Asynchronous methods in the interface is suggested.
-    */
     [ServiceContract]
     public interface INotificationEngine
     {
-
         [OperationContract]
-        string Echo(string message);
+        Task NotifyAbsence(string employee, AbsenceReason reason);
+    }
 
-        [OperationContract]
-        Task<string> UpperCaseAsync(string message);
-
+    [DataContract]
+    public enum AbsenceReason
+    {
+        [EnumMember] Sick = 1,
+        [EnumMember] CareOfChild = 2
     }
 }

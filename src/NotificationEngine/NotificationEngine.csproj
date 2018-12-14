@@ -8,11 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.3.5" />
+    <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.2.0-beta" />
+    <PackageReference Include="Kralizek.AWSXRayRecorder.Handlers.ServiceModel" Version="1.0.0-beta" />
     <PackageReference Include="EMG.Common.Configuration.CastleWindsor" Version="[1.0.1,2)" />
     <PackageReference Include="EMG.Wcf.Framework.Hosting" Version="[1.1.1,2)" />
     <PackageReference Include="NLog.Config" Version="[4.4.4,5)" />
     <PackageReference Include="Nybus.NLog" Version="[0.6.0.97,1)" />
-    <PackageReference Include="Studentum.Infrastructure.Logging.NLog.Loggly" Version="1.0.0.28" />
     <PackageReference Include="Topshelf.CastleWindsor" Version="[1.0.0,2)" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />

@@ -5,6 +5,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using EMG.Common;
 using EMG.Wcf.Installers;
+using XRaySample.NotificationEngine;
 using XRaySample.StorageResourceAccess;
 
 namespace EMG.AbsenceManager.Installers
@@ -26,7 +27,12 @@ namespace EMG.AbsenceManager.Installers
             container.Register(Component.For<IStorageResourceAccess>().ImplementedBy<StorageResourceAccessClient>().AsWcfClient(new DefaultClientModel
             {
                 Endpoint = WcfEndpoint.BoundTo(new NetTcpBinding(SecurityMode.None)).At("net.tcp://localtest.me:10001/")
-            }));
+            }).LifestyleTransient());
+
+            container.Register(Component.For<INotificationEngine>().ImplementedBy<NotificationEngineClient>().AsWcfClient(new DefaultClientModel
+            {
+                Endpoint = WcfEndpoint.BoundTo(new NetTcpBinding(SecurityMode.None)).At("net.tcp://localtest.me:10003/")
+            }).LifestyleTransient());
         }
     }
     
